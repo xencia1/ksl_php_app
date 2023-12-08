@@ -10,7 +10,7 @@ on:
  
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
  
     steps:   
  
@@ -49,7 +49,7 @@ jobs:
           name: ksl_php_app 
           path: release.zip
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     steps:
       - name: Download artifact from build job
