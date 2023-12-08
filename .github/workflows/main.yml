@@ -1,4 +1,5 @@
-name: Prod-Deploy
+name: PRODDeploy
+ 
 env: 
   PHP_VERSION: '8.x'        
   CI : false
@@ -9,8 +10,10 @@ on:
  
 jobs:
   build:
-    runs-on: runner1
+    runs-on: ubuntu-latest
+ 
     steps:   
+ 
       - name: Setup PHP        
         uses: actions/checkout@v2
         with:
@@ -38,31 +41,38 @@ jobs:
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
-      - name: installing zip
-        run: sudo apt install zip unzip
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: php_app
+          name: ksl_php_app 
           path: release.zip
-
-  
   deploy:
+    runs-on: ubuntu-latest
     needs: build
-    runs-on: runner1
     steps:
-    - name: 'Deploy to Azure VM'
-      uses: appleboy/ssh-action@master
-      with:
-          host: ${{secrets.VM_HOST}}
-          username: ${{secrets.VM_USER}}
-          password: ${{secrets.VM_PASS}}
-          port: ${{secrets.VM_PORT}}
-          script: |
-            scp -r /home/sumanth.n/actions-runner/_work/php_app/php_app self-hostedvm2@10.0.2.6:/home/sumanth.n/prod
-
-          
- 
-         
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: ksl_php_app          
+          #path: "php-app-dep/"
+      - name: unzip artifact for deployment
+        run: unzip release.zip 
+      - name: 'Deploy to Azure VM'
+        #id: deploy-to-webapp       
+        #uses:  appleboy/ssh-action@master
+        #uses: easingthemes/ssh-deploy@main
+        uses: appleboy/scp-action@v0.1.4
+        with:          
+          host : ${{secrets.HOST}}
+          username : ${{secrets.USER}}          
+          port : ${{secrets.PORT}}
+          password : ${{secrets.PASS}}          
+          source : ./
+          target: /home/sumanth.n/prod
+          strip_components: 1
+          #script: whoami|
+           #whoami
+           #ls -al
+           #pwd
