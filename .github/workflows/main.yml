@@ -74,7 +74,7 @@ jobs:
           port : ${{secrets.PORT}}
           password : ${{secrets.PASS}}          
           source : ./
-          target: /home/azureuser/prod
+          target: /home/sumanth.n/prod
           strip_components: 1
           #script: whoami|
            #whoami
