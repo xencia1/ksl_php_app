@@ -50,7 +50,7 @@ jobs:
         with:
           name: ksl_php_app 
           path: release.zip
-  deploy:
+  deploy_prod1:
     runs-on: self-hosted
     needs: build
     environment:
@@ -80,6 +80,10 @@ jobs:
            #whoami
            #ls -al
            #pwd
+  deploy_prod2:
+    runs-on: self-hosted
+    needs: build
+    steps:
       - name: 'Deploy to Azure vm2'
         #id: deploy-to-webapp       
         #uses:  appleboy/ssh-action@master
