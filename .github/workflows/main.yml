@@ -59,8 +59,8 @@ jobs:
        # with:
          # name: ksl_php_app          
           #path: "php-app-dep/"
-      #- name: unzip artifact for deployment
-       # run: unzip -o release.zip 
+      - name: unzip artifact for deployment
+        run: unzip -o release.zip 
       - name: 'Deploy to Azure vm1'
         uses: appleboy/scp-action@v0.1.4
         with:          
@@ -68,7 +68,7 @@ jobs:
           username : ${{secrets.USER}}          
           port : ${{secrets.PORT}}
           password : ${{secrets.PASS}}          
-          source : release.zip
+          source : ./
           target: /home/azureuser/prod
           strip_components: 1
   deploy_prod2:
@@ -82,7 +82,7 @@ jobs:
           username : ${{secrets.USER1}}          
           port : ${{secrets.PORT1}}
           password : ${{secrets.PASS1}}          
-          source : release.zip
+          source : ./
           target: /home/ksl_deploy2/prod2
           strip_components: 1
            
