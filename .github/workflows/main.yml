@@ -63,7 +63,7 @@ jobs:
           #path: "php-app-dep/"
       - name: unzip artifact for deployment
         run: unzip -o release.zip 
-      - name: 'Deploy to Azure VM'
+      - name: 'Deploy to Azure vm1'
         #id: deploy-to-webapp       
         #uses:  appleboy/ssh-action@master
         #uses: easingthemes/ssh-deploy@main
@@ -80,3 +80,17 @@ jobs:
            #whoami
            #ls -al
            #pwd
+      - name: 'Deploy to Azure vm2'
+        #id: deploy-to-webapp       
+        #uses:  appleboy/ssh-action@master
+        #uses: easingthemes/ssh-deploy@main
+        uses: appleboy/scp-action@v0.1.4
+        with:          
+          host : ${{secrets.HOST1}}
+          username : ${{secrets.USER1}}          
+          port : ${{secrets.PORT1}}
+          password : ${{secrets.PASS1}}          
+          source : ./
+          target: /home/ksl_deploy2/prod2
+          strip_components: 1
+           
