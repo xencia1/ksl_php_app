@@ -53,6 +53,8 @@ jobs:
   deploy_prod1:
     runs-on: self-hosted
     needs: build
+    environment:
+     name: 'Production1'
     steps:
       #- name: Download artifact from build job
        # uses: actions/download-artifact@v3
@@ -74,14 +76,16 @@ jobs:
   deploy_prod2:
       runs-on: self-hosted
       needs: build
+      environment:
+       name: 'Production2'
       steps:
        - name: 'Deploy to Azure vm2'
          uses: appleboy/scp-action@v0.1.4
          with:          
-          host : ${{secrets.HOST1}}
-          username : ${{secrets.USER1}}          
-          port : ${{secrets.PORT1}}
-          password : ${{secrets.PASS1}}          
+          host : ${{secrets.HOST}}
+          username : ${{secrets.USER}}          
+          port : ${{secrets.PORT}}
+          password : ${{secrets.PASS}}          
           source : ./
           target: /home/ksl_deploy2/prod2
           strip_components: 1
