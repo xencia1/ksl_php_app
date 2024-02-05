@@ -48,8 +48,7 @@ jobs:
           Expand-Archive -Path .\sshpass.zip -DestinationPath C:\Users\runnervm\actions-runner1\_work
           
       - name: Deploy to VM with Password
-        shell: pwsh  # Set PowerShell for this specific step
         run: |
           cd C:\Users\runnervm\actions-runner1\_work
-          pwsh -Command ".\sshpass.exe -p ${{ secrets.VM_PASSWORD }} scp -P ${{ secrets.VM_PORT }} release.zip ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod"
-          pwsh -Command ".\sshpass.exe -p ${{ secrets.VM_PASSWORD }} ssh -p ${{ secrets.VM_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} 'cd /home/hindu-prod1/prod && Expand-Archive -Path release.zip -DestinationPath . && ./deploy.sh'"
+          powershell.exe -Command ".\sshpass.exe -p ${{ secrets.VM_PASSWORD }} scp -P ${{ secrets.VM_PORT }} release.zip ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod"
+          powershell.exe -Command ".\sshpass.exe -p ${{ secrets.VM_PASSWORD }} ssh -p ${{ secrets.VM_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} 'cd /home/hindu-prod1/prod && Expand-Archive -Path release.zip -DestinationPath . && ./deploy.sh'"
