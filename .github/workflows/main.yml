@@ -41,6 +41,7 @@ jobs:
           name: php_app
           path: C:\Users\runnervm\actions-runner1\_work
       - name: Install sshpass
+        shell: pwsh
         run: |
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
           Invoke-WebRequest -Uri https://github.com/Baggykiin/sshpass-win/releases/download/v1.06.1/sshpass-1.06.1-win32-20141013.zip -OutFile sshpass.zip
