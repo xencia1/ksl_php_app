@@ -40,7 +40,7 @@ jobs:
         with:
           name: php_app
           path: C:\Users\runnervm\actions-runner1\_work
-      - name: Install sshpass
+      - name: Run PowerShell Script
         shell: pwsh
         run: |
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
