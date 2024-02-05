@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: hindurunner
+    runs-on: windows-latest
     steps:
       - name: Setup PHP
         uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
           path: release.zip
 
   deploy:
-    runs-on: hindurunner
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'hindu1'
@@ -41,11 +41,13 @@ jobs:
           name: php_app
           path: C:\Users\runnervm\actions-runner1\_work
 
-      - name: Copy artifacts to azure VM
-        uses: azure/scp-action@v2
-        with:
-          host: '10.0.2.6'
-          username: 'azureuser'
-          password: 'Sumanth@4-54'
-          source: C:\Users\runnervm\actions-runner1\_work
-          target: '/home/hindu-prod1/prod'
+      - name: Install sshpass
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest -Uri https://github.com/Baggykiin/sshpass-win/releases/download/v1.06.1/sshpass-1.06.1-win32-20141013.zip -OutFile sshpass.zip
+          Expand-Archive -Path .\sshpass.zip -DestinationPath C:\Users\runnervm\actions-runner1\_work
+
+      - name: Deploy to VM with Password
+        run: |
+          cd C:\Users\runnervm\actions-runner1\_work
+          .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} scp -P ${{ secrets.VM_PORT }} release.zip ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod
