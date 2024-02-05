@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: hindurunner
     steps:
       - name: Setup PHP
         uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       # Additional steps for caching and installing dependencies (unchanged)
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip .
+        run: Compress-Archive -Path .\* -DestinationPath release.zip
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -30,7 +30,7 @@ jobs:
           path: release.zip
 
   deploy:
-    runs-on: windows-latest
+    runs-on: hindurunner
     needs: build
     environment:
       name: 'hindu1'
@@ -40,7 +40,6 @@ jobs:
         with:
           name: php_app
           path: C:\Users\runnervm\actions-runner1\_work
-
       - name: Install sshpass
         run: |
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -51,4 +50,4 @@ jobs:
         run: |
           cd C:\Users\runnervm\actions-runner1\_work
           .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} scp -P ${{ secrets.VM_PORT }} release.zip ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod
-          .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} ssh -p ${{ secrets.VM_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} "cd /home/hindu-prod1/prod && unzip release.zip && ./deploy.sh"
+          .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} ssh -p ${{ secrets.VM_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} "cd /home/hindu-prod1/prod && Expand-Archive -Path release.zip -DestinationPath . && ./deploy.sh"
