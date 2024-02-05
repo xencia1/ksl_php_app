@@ -21,7 +21,7 @@ jobs:
       # Additional steps for caching and installing dependencies (unchanged)
 
       - name: Zip artifact for deployment
-        run: Compress-Archive -Path .\* -DestinationPath release.zip
+        run: zip -r release.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -43,11 +43,12 @@ jobs:
 
       - name: Install sshpass
         run: |
-          curl -L -o sshpass.zip https://github.com/Baggykiin/sshpass-win/releases/download/v1.06.1/sshpass-1.06.1-win32-20141013.zip
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest -Uri https://github.com/Baggykiin/sshpass-win/releases/download/v1.06.1/sshpass-1.06.1-win32-20141013.zip -OutFile sshpass.zip
           Expand-Archive -Path .\sshpass.zip -DestinationPath C:\Users\runnervm\actions-runner1\_work
 
       - name: Deploy to VM with Password
         run: |
           cd C:\Users\runnervm\actions-runner1\_work
           .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} scp -P ${{ secrets.VM_PORT }} release.zip ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod
-          .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} ssh -p ${{ secrets.VM_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} "cd /home/hindu-prod1/prod && Expand-Archive -Path release.zip -DestinationPath . && ./deploy.sh"
+          .\sshpass.exe -p ${{ secrets.VM_PASSWORD }} ssh -p ${{ secrets.VM_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} "cd /home/hindu-prod1/prod && unzip release.zip && ./deploy.sh"
