@@ -41,19 +41,11 @@ jobs:
           name: php_app
           path: C:\Users\runnervm\actions-runner1\_work
 
-      - name: Deploy to VM with Password
-        uses: plileggi/remote-ssh-action@v2
+      - name: Copy artifacts to azure VM
+        uses: azure/scp-action@v2
         with:
-          host: ${{ secrets.VM_PRIVATE_IP }}
-          username: ${{ secrets.VM_USERNAME }}
-          password: ${{ secrets.VM_PASSWORD }}
-          port: ${{ secrets.VM_SSH_PORT }}
-          script: |
-            # Navigate to the folder where the artifact is downloaded
-            cd /home/hindu-prod1/prod
-
-            # Copy the artifact to the remote VM
-            scp -P ${{ secrets.VM_SSH_PORT }} /Users/runnervm/actions-runner1/_work/release.zip ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod
-
-            # Connect to the remote VM and perform deployment tasks
-            ssh -p ${{ secrets.VM_SSH_PORT }} ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }} "cd /home/hindu-prod1/prod && unzip release.zip && ./deploy.sh"
+          host: '10.0.2.6'
+          username: 'azureuser'
+          password: 'Sumanth@4-54'
+          source: C:\Users\runnervm\actions-runner1\_work
+          target: '/home/hindu-prod1/prod'
