@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: hindurunner
+    runs-on: windows-latest
     steps:
       - name: Setup PHP
         uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
           path: release.zip
 
   deploy:
-    runs-on: hindurunner
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'hindu1'
@@ -43,8 +43,7 @@ jobs:
 
       - name: Install sshpass
         run: |
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          Invoke-WebRequest -Uri https://github.com/Baggykiin/sshpass-win/releases/download/v1.06.1/sshpass-1.06.1-win32-20141013.zip -OutFile sshpass.zip
+          curl -L -o sshpass.zip https://github.com/Baggykiin/sshpass-win/releases/download/v1.06.1/sshpass-1.06.1-win32-20141013.zip
           Expand-Archive -Path .\sshpass.zip -DestinationPath C:\Users\runnervm\actions-runner1\_work
 
       - name: Deploy to VM with Password
