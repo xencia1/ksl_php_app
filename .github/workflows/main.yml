@@ -1,19 +1,16 @@
 name: PRODDeploy
-
-env:
-  PHP_VERSION: '8.x'
-  CI: false
-
+env: 
+  PHP_VERSION: '8.x'        
+  CI : false
 on:
   push:
     branches:
       - main
-
 jobs:
   build:
     runs-on: hindurunner
-    steps:
-      - name: Setup PHP
+    steps:   
+      - name: Setup PHP        
         uses: actions/checkout@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -60,11 +57,5 @@ jobs:
       - name: Unzip artifact
         run: Expand-Archive -Path C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app\release.zip -DestinationPath C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app -Force
       - name: Deploy to VM
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
-        with:
-          server: ${{ secrets.VM_PRIVATE_IP }}
-          username: ${{ secrets.VM_USERNAME }}
-          password: ${{ secrets.VM_PASSWORD }}
-          server-dir: /home/hindu-prod1/prod/
-          local-dir: C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app/
-          passive: true
+        run: |
+          echo ${{ secrets.VM_PASSWORD }} | pscp -pw ${{ secrets.VM_PASSWORD }} -r C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app\* ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/home/hindu-prod1/prod
