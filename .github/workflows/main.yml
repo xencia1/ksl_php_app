@@ -41,10 +41,15 @@ jobs:
           name: php_app
           path: C:\Users\runnervm\actions-runner1\_work
 
+      - name: Install sshpass
+        uses: appleboy/ssh-action@master
+        with:
+          target: linux
+          host: ${{ secrets.NEW_VM_PRIVATE_IP }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          port: 22
+
       - name: Deploy to New VM with Password
         run: |
-          $securePassword = ConvertTo-SecureString -String "${{ secrets.VM_PASSWORD }}" -AsPlainText -Force
-          $credentials = New-Object System.Management.Automation.PSCredential -ArgumentList ("${{ secrets.VM_USERNAME }}", $securePassword)
-          New-PSDrive -Name Z -PSProvider FileSystem -Root "\\${{ secrets.NEW_VM_PRIVATE_IP }}\C$" -Credential $credentials
-          Copy-Item -Path C:\Users\runnervm\actions-runner1\_work\php_app\* -Destination Z:\home\hindu-prod1\prod
-          Remove-PSDrive -Name Z
+          sshpass -e scp -o StrictHostKeyChecking=no -r C:\Users\runnervm\actions-runner1\_work\php_app\* ${{ secrets.VM_USERNAME }}@${{ secrets.NEW_VM_PRIVATE_IP }}:/home/hindu-prod1/prod
