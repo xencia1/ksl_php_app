@@ -17,12 +17,29 @@ jobs:
         uses: actions/checkout@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-
-      # Additional steps for caching and installing dependencies (unchanged)
-
+      - name: Check if composer.json exists
+        id: check_files
+        uses: andstor/file-existence-action@v2
+        with:
+          files: 'composer.json'
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Set up dependency caching for faster installs
+        uses: actions/cache@v3
+        if: steps.check_files.outputs.files_exists == 'true'
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      - name: Run composer install if composer.json exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
       - name: Zip artifact for deployment
-        run: Compress-Archive -Path .\* -DestinationPath release.zip
-
+        run: zip release.zip ./* -r
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
@@ -39,17 +56,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: php_app
-          path: C:\Users\runnervm\actions-runner1\_work
-
-      - name: Install sshpass
-        uses: appleboy/ssh-action@master
-        with:
-          target: linux
-          host: ${{ secrets.NEW_VM_PRIVATE_IP }}
-          username: ${{ secrets.VM_USERNAME }}
-          password: ${{ secrets.VM_PASSWORD }}
-          port: 22
-
-      - name: Deploy to New VM with Password
+          path: C:\Users\runnervm\actions-runner\_work\php_app\php_app
+      - name: Unzip artifact
+        run: Expand-Archive -Path C:\Users\runnervm\actions-runner\_work\php_app\php_app\release.zip -DestinationPath C:\Users\runnervm\actions-runner\_work\php_app\php_app -Force
+      - name: Deploy to VM
         run: |
-          sshpass -e scp -o StrictHostKeyChecking=no -r C:\Users\runnervm\actions-runner1\_work\php_app\* ${{ secrets.VM_USERNAME }}@${{ secrets.NEW_VM_PRIVATE_IP }}:/home/hindu-prod1/prod
+          $password = ConvertTo-SecureString '${{ secrets.VM_PASSWORD }}' -AsPlainText -Force
+          $credential = New-Object System.Management.Automation.PSCredential('${{ secrets.VM_USERNAME }}', $password)
+          $session = New-PSSession -ComputerName '${{ secrets.VM_PRIVATE_IP }}' -Credential $credential
+          Copy-Item -Path 'C:\Users\runnervm\actions-runner\_work\php_app\php_app\*' -Destination '/home/azureuser/prod' -ToSession $session
+          Remove-PSSession $session
