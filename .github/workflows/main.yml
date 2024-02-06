@@ -66,5 +66,5 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           server-dir: /home/hindu-prod1/prod/
-          local-dir: C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app\
+          local-dir: C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app/
           passive: true
