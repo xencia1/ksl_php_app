@@ -58,5 +58,5 @@ jobs:
         run: Expand-Archive -Path C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app\release.zip -DestinationPath C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app -Force
       - name: Deploy to VM
         run: |
-          echo ${{ secrets.VM_PASSWORD }} | sudo pscp -pw ${{ secrets.VM_PASSWORD }} -r C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app\* ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/var/www/html/prod
+          echo ${{ secrets.VM_PASSWORD }} | pscp -pw ${{ secrets.VM_PASSWORD }} -r C:\Users\runnervm\actions-runner1\_work\ksl_php_app\ksl_php_app\* ${{ secrets.VM_USERNAME }}@${{ secrets.VM_PRIVATE_IP }}:/var/www/html/prod
 
